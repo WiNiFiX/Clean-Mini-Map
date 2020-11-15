@@ -1,0 +1,10 @@
+## Interface: 90001
+## Title: Clean-Mini-Map
+## Notes: Cleans the area around wows minimap to get rid of the annoying buttons and neatly consolidates them in a strip
+
+## Author: WiNiFiX
+## X-License: GNU General Public License Version 3
+## X-Category: Minimap UI
+## Version: 9.0.1
+
+Main.lua
