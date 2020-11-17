@@ -1,15 +1,72 @@
-local BlizzButtons = { "MiniMapWorldMapButton", "QueueStatusMinimapButton", "MinimapZoomIn", "MinimapZoomOut",  
-					   "MiniMapBattlefieldFrame", "GameTimeFrame", "FeedbackUIButton" , "MinimapBackdrop", "TimeManagerClockButton",
-					   "GarrisonLandingPageMinimapButton"};
+local height = 32
 
-local parent = CreateFrame('Frame',"Mine",UIParent)
-parent:RegisterEvent("ADDON_LOADED")
-parent:SetSize(32, 32)
+local x = 0
+local y = 0
+
+function OnClickXYPos()
+	if UnitIsPlayer('target') then 		
+		SendChatMessage('I am at location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']', 'WHISPER', nil, UnitName('target'));
+	else
+		local index = GetChannelName("General")
+		SendChatMessage('%t is at location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']', 'CHANNEL', nil, index);
+	end
+end
+
+local frmMain = CreateFrame('Button','XYPos',UIParent)
+frmMain:RegisterForClicks('AnyUp')
+frmMain:SetScript('OnClick', OnClickXYPos)
+frmMain:SetSize(150, height)
+frmMain.t = frmMain:CreateTexture()
+frmMain:SetPoint('TOP')
+frmMain.t:SetColorTexture(0.5,0.5,0.5,0.3)
+frmMain.t:SetAllPoints(frmMain)
+frmMain:Show()
+
+local xyPos = frmMain:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
+xyPos:SetPoint('TOPLEFT',5,-10)
+
+function round(number, precision)
+   local fmtStr = string.format('%%0.%sf',precision)
+   number = string.format(fmtStr,number)
+   return number
+end
+
+function updatePos()
+	local map = C_Map.GetBestMapForUnit('player')
+	local position = C_Map.GetPlayerMapPosition(map, 'player')
+	x, y = position:GetXY()
+	xyPos:SetText('Location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']')
+end
+
+C_Timer.NewTicker(0.1, updatePos)
+
+local parent = CreateFrame('Frame','Mine',UIParent)
+parent:SetPoint('TOPRIGHT', MinimapCluster, 'TOPLEFT', 25, 0)
+parent:RegisterEvent('ADDON_LOADED')
+parent:SetSize(32, height)
 parent.t = parent:CreateTexture()
-parent.t:SetColorTexture(0.5,0.5,0.5,0.5)
+parent.t:SetColorTexture(0.5,0.5,0.5,0.3)
+parent.t:SetMask('Interface\\Buttons\\buttonhilight-Square')
 parent.t:SetAllPoints(parent)
-parent:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", 25, 0)
 parent:Show()
+
+--local frmMain = CreateFrame('Frame','zzz',UIParent)
+--frmMain:SetSize(150, 150)
+--frmMain.t = frmMain:CreateTexture()
+--frmMain:SetPoint('CENTER', 100, 100)
+--frmMain.t:SetTexture('Interface\\DialogFrame\\ui-dialogbox-gold-background.blp')
+--frmMain.t:SetMask('interface/buttons/ui-autocastableoverlay.blp')
+--frmMain.t:SetAllPoints(frmMain)
+--frmMain:Show()
+
+-- Credits: https://git.tukui.org/Azilroka/ProjectAzilroka/-/blob/f13975c053ecbd8f78a4942166947b0902a2606f/Modules/SquareMinimapButtons.lua
+--local function SkinMinimapButton()	
+--	MiniMapTrackingIcon:ClearAllPoints()
+--	MiniMapTrackingIcon:SetPoint('CENTER')
+--	MiniMapTrackingBackground:SetAlpha(0)
+--	MiniMapTrackingIconOverlay:SetAlpha(0)
+--	MiniMapTrackingButton:SetAlpha(0)
+--end
 
 local movedButtonNames = {}
 local movedButtons = {}
@@ -24,20 +81,28 @@ function isInTable(tbl, buttonName)
 	return false;
 end
 
-function printParentChildName(button)
+function printParentChildName(button, width, height)
 	local parentName = button:GetParent():GetName()	
 	local childName = button:GetName()
 	
-	print(parentName .. "-->" .. childName)			
+	print(parentName .. '-->' .. childName .. '[' .. width .. ',' .. height .. ']')			
 end
 
 function addButton(button)	
 	if button:GetName() == nil then return end
-	if isInTable(BlizzButtons, button:GetName()) then return end	
-	if button:GetParent():GetName() == "Mine" then return end
+	--if isInTable(BlizzButtons, button:GetName()) then return end	
+	if button:GetParent():GetName() == 'Mine' then return end
+	local width, height = button:GetSize()	
+	width = floor(width)
+	height = floor(height)
 	
-	--printParentChildName(button)
+	if width > 33 or height > 33 then 
+		--printParentChildName(button, width, height)	
+		return 
+	end
 	
+	--printParentChildName(button, width, height)	
+		
 	table.insert(movedButtonNames, button:GetName())
 	table.insert(movedButtons, button)
 	
@@ -56,7 +121,7 @@ function findButtons(frame)
 end
 
 function printMyButtons()
-	print("------------------------------------")
+	print('------------------------------------')
 	for key, value in ipairs(movedButtons) do
 		printParentChildName(value)
 	end
@@ -65,19 +130,20 @@ end
 function squareMiniMap()
     MinimapBorderTop:Hide()
     MinimapBorder:Hide()
-    Minimap:SetMaskTexture('Interface\\ChatFrame\\ChatFrameBackground')
+    Minimap:SetMaskTexture('Interface\\ChatFrame\\ChatFrameBackground')	
 	MiniMapWorldMapButton:Hide()
 end
 
 local function refreshAll()	
-	addButton(MiniMapTracking)		
+	addButton(MiniMapTracking)	
+	--SkinMinimapButton()	
 	findButtons(Minimap)			
 	squareMiniMap()	
 end
 
 local function eventHandler(self, event, ...)
 	local arg1 = ...	
-	if event == "ADDON_LOADED" then			
+	if event == 'ADDON_LOADED' then			
 		refreshAll()					
 	end	
 end
@@ -85,8 +151,8 @@ end
 local lastHasNewMail = nil
 
 local function watchMailBoxIcon()
-	--DisableAddOn("SexyMap")
-	BuffFrame:SetPoint("TOPRIGHT", MinimapCluster, "TOPLEFT", 25, -40)		
+	--DisableAddOn('SexyMap')
+	BuffFrame:SetPoint('TOPRIGHT', MinimapCluster, 'TOPLEFT', 25, -40)		
 	local point, relativeTo, relativePoint, offset_x, offset_y = BuffFrame:GetPoint()
 	--print(offset_y)
 	MiniMapMailFrame:Show()			
@@ -105,4 +171,4 @@ C_Timer.NewTicker(0.1, watchMailBoxIcon)
 
 --C_Timer.NewTicker(1, printMyButtons)
 
-parent:SetScript("OnEvent", eventHandler)
+parent:SetScript('OnEvent', eventHandler)
