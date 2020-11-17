@@ -4,26 +4,45 @@ local x = 0
 local y = 0
 
 function OnClickXYPos()
+	if not UnitExists('target') then 
+		print('You have no target to send location information for')
+		return 
+	end
 	if UnitIsPlayer('target') then 		
 		SendChatMessage('I am at location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']', 'WHISPER', nil, UnitName('target'));
+		SetRaidTarget('target', 4);
 	else
 		local index = GetChannelName("General")
 		SendChatMessage('%t is at location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']', 'CHANNEL', nil, index);
+		SetRaidTarget('target', 8);
 	end
 end
 
 local frmMain = CreateFrame('Button','XYPos',UIParent)
 frmMain:RegisterForClicks('AnyUp')
 frmMain:SetScript('OnClick', OnClickXYPos)
-frmMain:SetSize(150, height)
+frmMain:SetSize(170, height)
 frmMain.t = frmMain:CreateTexture()
 frmMain:SetPoint('TOP')
 frmMain.t:SetColorTexture(0.5,0.5,0.5,0.3)
 frmMain.t:SetAllPoints(frmMain)
+
+frmMain.Backdrop = CreateFrame("Frame", "Backdrop", frmMain, "BackdropTemplate")
+frmMain.Backdrop:SetAllPoints()
+frmMain.Backdrop.backdropInfo = {
+	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+	tile = true,
+	tileSize = 2,
+	edgeSize = 2,
+	insets = { left = 2, right = 2, top = 2, bottom = 2, },
+}
+frmMain.Backdrop:ApplyBackdrop()
 frmMain:Show()
 
 local xyPos = frmMain:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
-xyPos:SetPoint('TOPLEFT',5,-10)
+xyPos:SetTextColor(1,1,1,1)
+xyPos:SetPoint('CENTER',0,0)
 
 function round(number, precision)
    local fmtStr = string.format('%%0.%sf',precision)
