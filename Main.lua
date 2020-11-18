@@ -1,3 +1,15 @@
+--[[
+
+UI Layers
+
+1. background
+2. border
+3. artwork
+4. overlay
+5. highlight
+
+]]--
+
 local height = 32
 
 local x = 0
@@ -22,26 +34,23 @@ local frmMain = CreateFrame('Button','XYPos',UIParent)
 frmMain:RegisterForClicks('AnyUp')
 frmMain:SetScript('OnClick', OnClickXYPos)
 frmMain:SetSize(170, height)
-frmMain.t = frmMain:CreateTexture()
 frmMain:SetPoint('TOP')
-frmMain.t:SetColorTexture(0.5,0.5,0.5,0.3)
-frmMain.t:SetAllPoints(frmMain)
 
-frmMain.Backdrop = CreateFrame("Frame", "Backdrop", frmMain, "BackdropTemplate")
-frmMain.Backdrop:SetAllPoints()
-frmMain.Backdrop.backdropInfo = {
-	bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
-	edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-	tile = true,
-	tileSize = 2,
-	edgeSize = 2,
-	insets = { left = 2, right = 2, top = 2, bottom = 2, },
+local backdrop = CreateFrame("Frame", "Backdrop", frmMain, "BackdropTemplate")
+backdrop:SetAllPoints()
+backdrop.backdropInfo = {
+	bgFile = nil,                                       -- String - Which texture file to use as frame background (.blp or .tga format) 
+	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",  -- String- Which texture file to use as frame edge blp or .tga format) 
+	tile = true,    									-- Boolean - whether background texture is tiled or streched 
+	tileSize = 16,  									-- Number - Control how large each copy of the bgFile becomes on-screen 
+	edgeSize = 16,   									-- Number - Control how large each copy of the edgeFile becomes on-screen (i.e. border thickness and corner size) 
+	insets = { left = 4, right = 4, top = 4, bottom = 4, },
 }
-frmMain.Backdrop:ApplyBackdrop()
+backdrop:ApplyBackdrop()
 frmMain:Show()
 
 local xyPos = frmMain:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
-xyPos:SetTextColor(1,1,1,1)
+xyPos:SetTextColor(1, 1, 1, 1)
 xyPos:SetPoint('CENTER',0,0)
 
 function round(number, precision)
