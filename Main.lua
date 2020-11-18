@@ -35,21 +35,22 @@ frmMain:RegisterForClicks('AnyUp')
 frmMain:SetScript('OnClick', OnClickXYPos)
 frmMain:SetSize(170, height)
 frmMain:SetPoint('TOP')
-
+frmMain:Show()
 local backdrop = CreateFrame("Frame", "Backdrop", frmMain, "BackdropTemplate")
 backdrop:SetAllPoints()
 backdrop.backdropInfo = {
-	bgFile = nil,                                       -- String - Which texture file to use as frame background (.blp or .tga format) 
+	bgFile = "Interface/Tooltips/UI-Tooltip-Background",-- String - Which texture file to use as frame background (.blp or .tga format) 
 	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",  -- String- Which texture file to use as frame edge blp or .tga format) 
 	tile = true,    									-- Boolean - whether background texture is tiled or streched 
+	tileEdge = true,									-- Boolean - whether edge texture is tiled or streched 
 	tileSize = 16,  									-- Number - Control how large each copy of the bgFile becomes on-screen 
 	edgeSize = 16,   									-- Number - Control how large each copy of the edgeFile becomes on-screen (i.e. border thickness and corner size) 
-	insets = { left = 4, right = 4, top = 4, bottom = 4, },
+	insets = { left = 4, right = 4, top = 4, bottom = 4, },	
 }
 backdrop:ApplyBackdrop()
-frmMain:Show()
+backdrop:SetBackdropColor(0, 0, 1, 0.3)
 
-local xyPos = frmMain:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
+local xyPos = backdrop:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
 xyPos:SetTextColor(1, 1, 1, 1)
 xyPos:SetPoint('CENTER',0,0)
 
