@@ -1,0 +1,28 @@
+{
+    "Lua.diagnostics.globals": [
+        "UnitExists",
+        "UnitIsPlayer",
+        "SendChatMessage",
+        "SetRaidTarget",
+        "GetChannelName",
+        "CreateFrame",
+        "UnitName",
+        "C_Map",
+        "C_Timer",
+        "MinimapCluster",
+        "UIParent",
+        "floor",
+        "MinimapBorderTop",
+        "MinimapBorder",
+        "Minimap",
+        "MiniMapWorldMapButton",
+        "MiniMapTracking",
+        "BuffFrame",
+        "MiniMapMailFrame",
+        "HasNewMail",
+        "round"
+    ],
+    "Lua.diagnostics.disable": [
+        "trailing-space"
+    ]
+}

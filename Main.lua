@@ -54,13 +54,13 @@ local xyPos = backdrop:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText')
 xyPos:SetTextColor(1, 1, 1, 1)
 xyPos:SetPoint('CENTER',0,0)
 
-function round(number, precision)
+local function round(number, precision)
    local fmtStr = string.format('%%0.%sf',precision)
    number = string.format(fmtStr,number)
    return number
 end
 
-function updatePos()
+local function updatePos()
 	local map = C_Map.GetBestMapForUnit('player')
 	local position = C_Map.GetPlayerMapPosition(map, 'player')
 	x, y = position:GetXY()
@@ -100,63 +100,38 @@ parent:Show()
 local movedButtonNames = {}
 local movedButtons = {}
 
-function isInTable(tbl, buttonName)
-	if buttonName == nil then return false end
-	for k,v in ipairs(tbl) do
-		if (strlower(v) == strlower(buttonName))  then
-			return true;
-		end
-	end
-	return false;
-end
-
-function printParentChildName(button, width, height)
-	local parentName = button:GetParent():GetName()	
+local function printParentChildName(button, width, height)
+	local parentName = button:GetParent():GetName()
 	local childName = button:GetName()
-	
-	print(parentName .. '-->' .. childName .. '[' .. width .. ',' .. height .. ']')			
+	print(parentName .. '-->' .. childName .. '[' .. width .. ',' .. height .. ']')
 end
 
-function addButton(button)	
+local function addButton(button)
 	if button:GetName() == nil then return end
-	--if isInTable(BlizzButtons, button:GetName()) then return end	
 	if button:GetParent():GetName() == 'Mine' then return end
-	local width, height = button:GetSize()	
+	local width, height = button:GetSize()
 	width = floor(width)
 	height = floor(height)
-	
-	if width > 33 or height > 33 then 
-		--printParentChildName(button, width, height)	
-		return 
-	end
-	
-	--printParentChildName(button, width, height)	
-		
+	if width > 33 or height > 33 then return end
+
 	table.insert(movedButtonNames, button:GetName())
 	table.insert(movedButtons, button)
-	
+
 	local offsetX = table.getn(movedButtonNames)
-	
-	parent:SetSize(32 * offsetX, 32)	
-	
-	button:SetParent(parent)	
-	button:SetPoint('TOPLEFT', 32 * (offsetX - 1), 0 )		
+
+	parent:SetSize(32 * offsetX, 32)
+
+	button:SetParent(parent)
+	button:SetPoint('TOPLEFT', 32 * (offsetX - 1), 0)
 end
 
-function findButtons(frame)
-	for i, child in ipairs({frame:GetChildren()}) do					
-		addButton(child);	
+local function findButtons(frame)
+	for i, child in ipairs({frame:GetChildren()}) do
+		addButton(child);
 	end
 end
 
-function printMyButtons()
-	print('------------------------------------')
-	for key, value in ipairs(movedButtons) do
-		printParentChildName(value)
-	end
-end
-
-function squareMiniMap()
+local function squareMiniMap()
     MinimapBorderTop:Hide()
     MinimapBorder:Hide()
     Minimap:SetMaskTexture('Interface\\ChatFrame\\ChatFrameBackground')	
@@ -164,26 +139,22 @@ function squareMiniMap()
 end
 
 local function refreshAll()	
-	addButton(MiniMapTracking)	
-	--SkinMinimapButton()	
-	findButtons(Minimap)			
-	squareMiniMap()	
+	addButton(MiniMapTracking)
+	findButtons(Minimap)
+	squareMiniMap()
 end
 
 local function eventHandler(self, event, ...)
-	local arg1 = ...	
-	if event == 'ADDON_LOADED' then			
+	local arg1 = ...
+	if event == 'ADDON_LOADED' then
 		refreshAll()					
-	end	
+	end
 end
 
 local lastHasNewMail = nil
 
-local function watchMailBoxIcon()
-	--DisableAddOn('SexyMap')
-	BuffFrame:SetPoint('TOPRIGHT', MinimapCluster, 'TOPLEFT', 25, -40)		
-	local point, relativeTo, relativePoint, offset_x, offset_y = BuffFrame:GetPoint()
-	--print(offset_y)
+local function watchMailBoxIcon()	
+	BuffFrame:SetPoint('TOPRIGHT', MinimapCluster, 'TOPLEFT', 25, -40)			
 	MiniMapMailFrame:Show()			
 	if MiniMapMailFrame == nil then return end
 	if lastHasNewMail ~= HasNewMail() then
@@ -197,7 +168,5 @@ local function watchMailBoxIcon()
 end
 
 C_Timer.NewTicker(0.1, watchMailBoxIcon)
-
---C_Timer.NewTicker(1, printMyButtons)
 
 parent:SetScript('OnEvent', eventHandler)
