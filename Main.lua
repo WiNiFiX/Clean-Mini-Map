@@ -35,7 +35,7 @@ frmMain:RegisterForClicks('AnyUp')
 frmMain:SetScript('OnClick', OnClickXYPos)
 frmMain:SetSize(170, height)
 frmMain:SetPoint('TOP')
-frmMain:Show()
+--frmMain:Show()
 local backdrop = CreateFrame("Frame", "Backdrop", frmMain, "BackdropTemplate")
 backdrop:SetAllPoints()
 backdrop.backdropInfo = {
@@ -47,8 +47,8 @@ backdrop.backdropInfo = {
 	edgeSize = 16,   									-- Number - Control how large each copy of the edgeFile becomes on-screen (i.e. border thickness and corner size) 
 	insets = { left = 4, right = 4, top = 4, bottom = 4, },	
 }
-backdrop:ApplyBackdrop()
-backdrop:SetBackdropColor(0, 0, 1, 0.3)
+--backdrop:ApplyBackdrop()
+---backdrop:SetBackdropColor(0, 0, 1, 0.3)
 
 local xyPos = backdrop:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
 xyPos:SetTextColor(1, 1, 1, 1)
@@ -67,7 +67,7 @@ local function updatePos()
 	xyPos:SetText('Location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']')
 end
 
-C_Timer.NewTicker(0.1, updatePos)
+--C_Timer.NewTicker(0.1, updatePos)
 
 local parent = CreateFrame('Frame','Mine',UIParent)
 parent:SetPoint('TOPRIGHT', MinimapCluster, 'TOPLEFT', 25, 0)
