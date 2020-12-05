@@ -12,63 +12,6 @@ UI Layers
 
 local height = 32
 
-local x = 0
-local y = 0
-
-function OnClickXYPos()
-	if not UnitExists('target') then 
-		print('You have no target to send location information for')
-		return 
-	end
-	if UnitIsPlayer('target') then 		
-		SendChatMessage('I am at location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']', 'WHISPER', nil, UnitName('target'));
-		SetRaidTarget('target', 4);
-	else
-		local index = GetChannelName("General")
-		SendChatMessage('%t is at location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']', 'CHANNEL', nil, index);
-		SetRaidTarget('target', 8);
-	end
-end
-
-local frmMain = CreateFrame('Button','XYPos',UIParent)
-frmMain:RegisterForClicks('AnyUp')
-frmMain:SetScript('OnClick', OnClickXYPos)
-frmMain:SetSize(170, height)
-frmMain:SetPoint('TOP')
---frmMain:Show()
-local backdrop = CreateFrame("Frame", "Backdrop", frmMain, "BackdropTemplate")
-backdrop:SetAllPoints()
-backdrop.backdropInfo = {
-	bgFile = "Interface/Tooltips/UI-Tooltip-Background",-- String - Which texture file to use as frame background (.blp or .tga format) 
-	edgeFile = "Interface/Tooltips/UI-Tooltip-Border",  -- String- Which texture file to use as frame edge blp or .tga format) 
-	tile = true,    									-- Boolean - whether background texture is tiled or streched 
-	tileEdge = true,									-- Boolean - whether edge texture is tiled or streched 
-	tileSize = 16,  									-- Number - Control how large each copy of the bgFile becomes on-screen 
-	edgeSize = 16,   									-- Number - Control how large each copy of the edgeFile becomes on-screen (i.e. border thickness and corner size) 
-	insets = { left = 4, right = 4, top = 4, bottom = 4, },	
-}
---backdrop:ApplyBackdrop()
----backdrop:SetBackdropColor(0, 0, 1, 0.3)
-
-local xyPos = backdrop:CreateFontString(frmMain, 'OVERLAY', 'GameTooltipText') 
-xyPos:SetTextColor(1, 1, 1, 1)
-xyPos:SetPoint('CENTER',0,0)
-
-local function round(number, precision)
-   local fmtStr = string.format('%%0.%sf',precision)
-   number = string.format(fmtStr,number)
-   return number
-end
-
-local function updatePos()
-	local map = C_Map.GetBestMapForUnit('player')
-	local position = C_Map.GetPlayerMapPosition(map, 'player')
-	x, y = position:GetXY()
-	xyPos:SetText('Location [' .. round(x * 100, 2) .. ', '.. round(y * 100, 2) ..']')
-end
-
---C_Timer.NewTicker(0.1, updatePos)
-
 local parent = CreateFrame('Frame','Mine',UIParent)
 parent:SetPoint('TOPRIGHT', MinimapCluster, 'TOPLEFT', 25, 0)
 parent:RegisterEvent('ADDON_LOADED')
@@ -79,32 +22,8 @@ parent.t:SetMask('Interface\\Buttons\\buttonhilight-Square')
 parent.t:SetAllPoints(parent)
 parent:Show()
 
---local frmMain = CreateFrame('Frame','zzz',UIParent)
---frmMain:SetSize(150, 150)
---frmMain.t = frmMain:CreateTexture()
---frmMain:SetPoint('CENTER', 100, 100)
---frmMain.t:SetTexture('Interface\\DialogFrame\\ui-dialogbox-gold-background.blp')
---frmMain.t:SetMask('interface/buttons/ui-autocastableoverlay.blp')
---frmMain.t:SetAllPoints(frmMain)
---frmMain:Show()
-
--- Credits: https://git.tukui.org/Azilroka/ProjectAzilroka/-/blob/f13975c053ecbd8f78a4942166947b0902a2606f/Modules/SquareMinimapButtons.lua
---local function SkinMinimapButton()	
---	MiniMapTrackingIcon:ClearAllPoints()
---	MiniMapTrackingIcon:SetPoint('CENTER')
---	MiniMapTrackingBackground:SetAlpha(0)
---	MiniMapTrackingIconOverlay:SetAlpha(0)
---	MiniMapTrackingButton:SetAlpha(0)
---end
-
 local movedButtonNames = {}
 local movedButtons = {}
-
-local function printParentChildName(button, width, height)
-	local parentName = button:GetParent():GetName()
-	local childName = button:GetName()
-	print(parentName .. '-->' .. childName .. '[' .. width .. ',' .. height .. ']')
-end
 
 local function addButton(button)
 	if button:GetName() == nil then return end
